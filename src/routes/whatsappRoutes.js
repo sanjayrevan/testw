@@ -25,4 +25,17 @@ router.post("/send", async (req, res) => {
     }
 });
 
+// Route to fetch messages.txt content
+router.get('/messages', (req, res) => {
+    const filePath = path.join(__dirname, '../../messages.txt');
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("❌ Error reading messages file:", err);
+            return res.status(500).send("Error reading messages.");
+        }
+        res.type('text/plain').send(data);
+    });
+});
+
 module.exports = router;
