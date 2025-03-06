@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { verifyToken } = require('../config/envConfig');
+//const { verifyToken } = require('../config/envConfig');
+const verifyToken = "verify_token";
 
 // Webhook verification (for initial setup)
 exports.verifyWebhook = (req, res) => {
