@@ -47,11 +47,18 @@ const sendMessage = async (recipient, messageType, messageData) => {
             // ✅ Sending a standard template message (no media)
             payload = {
                 messaging_product: "whatsapp",
+                recipient_type: "individual",
                 to: recipient,
                 type: "template",
                 template: {
                     name: messageData.templateName,
-                    language: { code: messageData.languageCode }
+                    language: { code: messageData.languageCode },
+                    components: [
+                        {
+                            type: "body",
+                            parameters: messageData.parameters // Dynamic parameters
+                        }
+                    ]
                 }
             };
         }
