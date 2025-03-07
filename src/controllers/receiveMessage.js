@@ -34,18 +34,10 @@ const saveMessageToFile = (message) => {
 exports.receiveMessage = (req, res) => {
     const incomingData = req.body;
 
-    if (incomingData.entry) {
-        incomingData.entry.forEach(entry => {
-            entry.changes.forEach(change => {
-                if (change.value.messages) {
-                    change.value.messages.forEach(message => {
-                        console.log("📩 Received Message:", JSON.stringify(message, null, 2));
-                        saveMessageToFile(message); // Save to text file
-                    });
-                }
-            });
-        });
-    }
+    console.log("📩 Complete Webhook Data:", JSON.stringify(incomingData, null, 2)); // Log everything
 
-    res.sendStatus(200);
+    // Save full response to a file for debugging
+    fs.writeFileSync('webhook_log.json', JSON.stringify(incomingData, null, 2), 'utf8');
+
+    res.sendStatus(200); // Send response immediately
 };
