@@ -38,4 +38,21 @@ router.get('/messages', (req, res) => {
     });
 });
 
+router.post("/send-template", async (req, res) => {
+    try {
+        const { recipient, templateName, languageCode, parameters } = req.body;
+
+        const messageData = {
+            templateName: templateName,
+            languageCode: languageCode,
+            parameters: parameters || [] // Optional dynamic parameters
+        };
+
+        await sendMessage(recipient, "template", messageData);
+        res.status(200).json({ success: true, message: "Template message sent successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 module.exports = router;
