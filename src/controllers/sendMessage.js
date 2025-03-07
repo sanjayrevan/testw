@@ -4,6 +4,16 @@ const { accessToken, phoneNumberId } = require('../config/envConfig');
 const sendMessage = async (recipient, messageType, messageData) => {
     const url = `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`;
 
+    if (!recipient) {
+        console.error("❌ Error: Recipient phone number is required!");
+        return;
+    }
+
+    if (messageType === "template" && (!messageData.templateName || !messageData.languageCode)) {
+        console.error("❌ Error: Template name and language code are required for template messages!");
+        return;
+    }
+
     let payload;
 
     if (messageType === "text") {
@@ -21,7 +31,7 @@ const sendMessage = async (recipient, messageType, messageData) => {
             to: recipient,
             type: "template",
             template: {
-                name: messageData.templateName.toLowerCase(), // WhatsApp requires lowercase
+                name: messageData.templateName.toLowerCase(),
                 language: { code: messageData.languageCode },
                 components: []
             }
@@ -41,7 +51,7 @@ const sendMessage = async (recipient, messageType, messageData) => {
         }
 
         // ✅ Add Body (Text Parameters)
-        if (messageData.parameters && messageData.parameters.length > 0) {
+        if (Array.isArray(messageData.parameters) && messageData.parameters.length > 0) {
             payload.template.components.push({
                 type: "body",
                 parameters: messageData.parameters.map(param => ({
@@ -51,7 +61,7 @@ const sendMessage = async (recipient, messageType, messageData) => {
             });
         }
     } else {
-        console.log("❌ Invalid message type!");
+        console.error("❌ Error: Invalid message type! Must be 'text' or 'template'.");
         return;
     }
 
