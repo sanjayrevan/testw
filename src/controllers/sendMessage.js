@@ -21,26 +21,26 @@ const sendMessage = async (recipient, messageType, messageData) => {
             to: recipient,
             type: "template",
             template: {
-                name: messageData.templateName,
+                name: messageData.templateName.toLowerCase(), // WhatsApp requires lowercase
                 language: { code: messageData.languageCode },
                 components: []
             }
         };
 
-        // ✅ Add media (if provided)
-        if (messageData.mediaType && messageData.mediaUrl) {
+        // ✅ Add Header (Image)
+        if (messageData.mediaType === "image" && messageData.mediaUrl) {
             payload.template.components.push({
                 type: "header",
                 parameters: [
                     {
-                        type: messageData.mediaType, // "image", "video", "document"
-                        [messageData.mediaType]: { link: messageData.mediaUrl } // Correct object format
+                        type: "image",
+                        image: { link: messageData.mediaUrl }
                     }
                 ]
             });
         }
 
-        // ✅ Add body parameters (if provided)
+        // ✅ Add Body (Text Parameters)
         if (messageData.parameters && messageData.parameters.length > 0) {
             payload.template.components.push({
                 type: "body",
@@ -56,7 +56,7 @@ const sendMessage = async (recipient, messageType, messageData) => {
     }
 
     try {
-        console.log("📩 Sending payload:", JSON.stringify(payload, null, 2)); // Debugging log
+        console.log("📩 Sending payload:", JSON.stringify(payload, null, 2));
         const response = await axios.post(url, payload, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
