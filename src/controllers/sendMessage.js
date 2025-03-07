@@ -34,7 +34,7 @@ const sendMessage = async (recipient, messageType, messageData) => {
                 parameters: [
                     {
                         type: messageData.mediaType, // "image", "video", "document"
-                        link: messageData.mediaUrl  // Direct URL of media file
+                        [messageData.mediaType]: { link: messageData.mediaUrl } // Correct object format
                     }
                 ]
             });
