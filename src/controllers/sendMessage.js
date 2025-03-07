@@ -15,59 +15,40 @@ const sendMessage = async (recipient, messageType, messageData) => {
             text: { body: messageData }
         };
     } else if (messageType === "template") {
-        if (messageData.mediaType) {
-            // ✅ Sending a media template message (Image, Video, Document)
-            payload = {
-                messaging_product: "whatsapp",
-                to: recipient,
-                type: "template",
-                template: {
-                    name: messageData.templateName,
-                    language: { code: messageData.languageCode },
-                    components: [
-                        {
-                            type: "header",
-                            parameters: [
-                                {
-                                    type: messageData.mediaType, // "image", "video", "document"
-                                    link: messageData.mediaUrl  // Direct URL of media file
-                                }
-                            ]
-                        },
-                        {
-                            type: "body",
-                            parameters: [
-                                { type: "text", text: messageData.bodyText } // Dynamic body text
-                            ]
-                        }
-                    ]
-                }
-            };
-        } else {
-            // ✅ Sending a standard template message (no media)
-            payload = {
-                messaging_product: "whatsapp",
-                recipient_type: "individual",
-                to: recipient,
-                type: "template",
-                template: {
-                    name: messageData.templateName,
-                    language: { code: messageData.languageCode },
-                }
-            };
-
-            // ✅ Only add components if parameters exist
-            if (messageData.parameters && messageData.parameters.length > 0) {
-                payload.template.components = [
-                    {
-                        type: "body",
-                        parameters: messageData.parameters.map(param => ({
-                            type: "text",
-                            text: param
-                        }))
-                    }
-                ];
+        payload = {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: recipient,
+            type: "template",
+            template: {
+                name: messageData.templateName,
+                language: { code: messageData.languageCode },
+                components: []
             }
+        };
+
+        // ✅ Add media (if provided)
+        if (messageData.mediaType && messageData.mediaUrl) {
+            payload.template.components.push({
+                type: "header",
+                parameters: [
+                    {
+                        type: messageData.mediaType, // "image", "video", "document"
+                        link: messageData.mediaUrl  // Direct URL of media file
+                    }
+                ]
+            });
+        }
+
+        // ✅ Add body parameters (if provided)
+        if (messageData.parameters && messageData.parameters.length > 0) {
+            payload.template.components.push({
+                type: "body",
+                parameters: messageData.parameters.map(param => ({
+                    type: "text",
+                    text: param
+                }))
+            });
         }
     } else {
         console.log("❌ Invalid message type!");
