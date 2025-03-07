@@ -47,7 +47,7 @@ router.post("/send-template", async (req, res) => {
             languageCode: languageCode,
             parameters: parameters || [] // Optional dynamic parameters
         };
-        console.messageData;
+        console.log(messageData);
 
         await sendMessage(recipient, "template", messageData);
         res.status(200).json({ success: true, message: "Template message sent successfully" });
