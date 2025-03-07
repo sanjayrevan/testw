@@ -40,18 +40,22 @@ router.get('/messages', (req, res) => {
 
 router.post("/send-template", async (req, res) => {
     try {
-        const { recipient, templateName, languageCode, parameters } = req.body;
+        const { recipient, templateName, languageCode, mediaType, mediaUrl, parameters } = req.body;
 
         const messageData = {
-            templateName: templateName,
-            languageCode: languageCode,
-            parameters: parameters || [] // Optional dynamic parameters
+            templateName,
+            languageCode,
+            mediaType: mediaType || null, // Optional media type (image, video, document)
+            mediaUrl: mediaUrl || null,   // Optional media URL
+            parameters: parameters || []  // Optional dynamic parameters
         };
-        console.log(messageData);
+
+        console.log("📩 Message Data:", JSON.stringify(messageData, null, 2));
 
         await sendMessage(recipient, "template", messageData);
         res.status(200).json({ success: true, message: "Template message sent successfully" });
     } catch (error) {
+        console.error("❌ Error:", error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
