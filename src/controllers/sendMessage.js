@@ -53,14 +53,21 @@ const sendMessage = async (recipient, messageType, messageData) => {
                 template: {
                     name: messageData.templateName,
                     language: { code: messageData.languageCode },
-                    components: [
-                        {
-                            type: "body",
-                            parameters: messageData.parameters // Dynamic parameters
-                        }
-                    ]
                 }
             };
+
+            // ✅ Only add components if parameters exist
+            if (messageData.parameters && messageData.parameters.length > 0) {
+                payload.template.components = [
+                    {
+                        type: "body",
+                        parameters: messageData.parameters.map(param => ({
+                            type: "text",
+                            text: param
+                        }))
+                    }
+                ];
+            }
         }
     } else {
         console.log("❌ Invalid message type!");
@@ -68,6 +75,7 @@ const sendMessage = async (recipient, messageType, messageData) => {
     }
 
     try {
+        console.log("📩 Sending payload:", JSON.stringify(payload, null, 2)); // Debugging log
         const response = await axios.post(url, payload, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
